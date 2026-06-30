@@ -1,0 +1,83 @@
+---
+import '../styles/global.css'
+
+interface Props {
+  title?: string
+  description?: string
+}
+
+const {
+  title = 'Ángel & Goretti · 22 de Agosto 2026',
+  description = 'Nos casamos. Acompáñanos a celebrar nuestro amor.',
+} = Astro.props
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+
+    <!-- Al recargar (F5), siempre empezar desde arriba en vez de restaurar el
+         scroll. Evita que el Hero quede "sin revelar" al cargar desplazado. -->
+    <script is:inline>
+      if ('scrollRestoration' in history) {
+        history.scrollRestoration = 'manual'
+      }
+      // Red de seguridad: al cargar/volver, ir arriba (salvo enlaces a #seccion)
+      window.addEventListener('pageshow', () => {
+        if (!location.hash) window.scrollTo(0, 0)
+      })
+    </script>
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="description" content={description} />
+
+    <!-- Fuentes: serif editorial + sans neutra -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <title>{title}</title>
+  </head>
+  <body>
+    <slot />
+
+    <script>
+      // Revela los elementos [data-reveal] al entrar en pantalla (una sola vez)
+      const reveal = (el) => el.classList.add('is-visible')
+      const io = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (entry.isIntersecting) {
+              reveal(entry.target)
+              io.unobserve(entry.target)
+            }
+          }
+        },
+        { threshold: 0.12, rootMargin: '0px 0px -8% 0px' }
+      )
+
+      // Revela de inmediato lo que ya está en pantalla o por encima (por si la
+      // página se abrió desplazada hacia abajo); observa solo lo que está abajo.
+      const sembrar = () => {
+        for (const el of document.querySelectorAll('[data-reveal]:not(.is-visible)')) {
+          if (el.getBoundingClientRect().top < window.innerHeight) {
+            reveal(el)
+          } else {
+            io.observe(el)
+          }
+        }
+      }
+
+      sembrar()
+      // Reintenta tras la restauración del scroll del navegador
+      window.addEventListener('load', sembrar)
+      window.addEventListener('pageshow', sembrar)
+    </script>
+  </body>
+</html>

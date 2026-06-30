@@ -1,0 +1,99 @@
+@import "tailwindcss";
+
+/* ============================================================
+   SISTEMA DE DISEÑO — "Ángel & Goretti"
+   Reglas: impeccable (grises entintados) + taste (editorial)
+   + emilkowalski (movimiento físico). Definido como tokens
+   de Tailwind v4: generan utilidades (bg-bone, text-ink, etc.)
+   ============================================================ */
+@theme {
+  /* Color — nada de negro/blanco puro, todo entintado */
+  --color-bone: #faf8f5; /* fondo blanco hueso */
+  --color-ink: #2b2724; /* texto marrón-tinta */
+  --color-ink-soft: #6b635c; /* texto secundario */
+  --color-sage: #7c8a6e; /* acento principal */
+  --color-sage-dark: #5e6b52; /* acento profundo */
+  --color-sand: #d9c7b3; /* nude / arena */
+  --color-gold: #b89b72; /* oro apagado, solo líneas finas */
+  --color-hairline: rgba(43, 39, 36, 0.08); /* borde 1px translúcido */
+
+  /* Tipografía — serif editorial + sans neutra */
+  --font-display: "Cormorant Garamond", Georgia, serif;
+  --font-body: "Inter", system-ui, sans-serif;
+
+  /* Movimiento — curvas elegantes y elásticas */
+  --ease-elegant: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-bone);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+}
+
+@layer utilities {
+  /* Etiqueta pequeña en mayúsculas con tracking amplio (estética editorial) */
+  .eyebrow {
+    font-family: var(--font-body);
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    font-size: 0.72rem;
+    color: var(--color-ink-soft);
+  }
+
+  /* Línea fina translúcida en lugar de tarjetas con sombra */
+  .hairline {
+    border: 1px solid var(--color-hairline);
+  }
+
+  /* Ancho de lectura cómodo y centrado */
+  .shell {
+    width: 100%;
+    max-width: 64rem;
+    margin-inline: auto;
+    padding-inline: 1.5rem;
+  }
+}
+
+/* ---- Scroll reveal: los elementos entran con física suave (emilkowalski) ---- */
+@layer utilities {
+  [data-reveal] {
+    opacity: 0;
+    transform: translateY(28px);
+    transition:
+      opacity 0.9s var(--ease-elegant),
+      transform 0.9s var(--ease-elegant);
+    transition-delay: var(--reveal-delay, 0ms);
+    will-change: opacity, transform;
+  }
+
+  [data-reveal].is-visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-reveal] {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+}

@@ -1,0 +1,206 @@
+---
+interface Evento {
+  titulo: string
+  hora: string
+  lugar: string
+  direccion: string
+  mapa?: string
+  imagen?: string
+}
+
+interface Props {
+  ceremonia?: Evento
+  recepcion?: Evento
+}
+
+const FALLBACK_CEREMONIA: Evento = {
+  titulo: 'Ceremonia',
+  hora: '5:00 PM',
+  lugar: 'Por confirmar',
+  direccion: 'Aguascalientes, México',
+  mapa: '',
+  imagen: '',
+}
+
+const FALLBACK_RECEPCION: Evento = {
+  titulo: 'Recepción',
+  hora: '7:00 PM',
+  lugar: 'Por confirmar',
+  direccion: 'Aguascalientes, México',
+  mapa: '',
+  imagen: '',
+}
+
+const { ceremonia = FALLBACK_CEREMONIA, recepcion = FALLBACK_RECEPCION } = Astro.props
+
+// Quita campos vacíos para que el fallback aplique cuando el admin los dejó en blanco
+function soloLlenos(obj: Partial<Evento> = {}): Partial<Evento> {
+  return Object.fromEntries(
+    Object.entries(obj).filter(([, v]) => v !== '' && v != null)
+  )
+}
+
+// Mezcla fallback + solo los campos que el admin sí llenó
+const eventos = [
+  { ...FALLBACK_CEREMONIA, titulo: 'Ceremonia', ...soloLlenos(ceremonia) },
+  { ...FALLBACK_RECEPCION, titulo: 'Recepción', ...soloLlenos(recepcion) },
+]
+---
+
+<section id="detalles" class="detalles">
+  <div class="shell">
+    <header class="detalles__head" data-reveal>
+      <p class="eyebrow">El gran día</p>
+      <h2 class="detalles__title">Detalles del evento</h2>
+    </header>
+
+    <div class="detalles__grid">
+      {
+        eventos.map((ev, i) => (
+          <article class="evento" data-reveal style={`--reveal-delay: ${i * 120}ms;`}>
+            <div class="evento__foto">
+              {ev.imagen ? (
+                <img src={ev.imagen} alt={`Lugar: ${ev.lugar}`} loading="lazy" />
+              ) : (
+                <span class="evento__foto-ph">Imagen del lugar</span>
+              )}
+            </div>
+
+            <div class="evento__body">
+              <p class="evento__kicker">{ev.titulo}</p>
+              <p class="evento__hora">{ev.hora}</p>
+              <p class="evento__lugar">{ev.lugar}</p>
+              <p class="evento__dir">{ev.direccion}</p>
+
+              {ev.mapa && (
+                <a class="evento__mapa" href={ev.mapa} target="_blank" rel="noopener">
+                  Cómo llegar →
+                </a>
+              )}
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .detalles {
+    padding-block: clamp(5rem, 12vw, 9rem);
+  }
+
+  .detalles__head {
+    text-align: center;
+    margin-bottom: clamp(3rem, 8vw, 5rem);
+  }
+
+  .detalles__title {
+    font-size: clamp(2.2rem, 6vw, 3.6rem);
+    margin-top: 0.6rem;
+  }
+
+  .detalles__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: clamp(2rem, 5vw, 3.5rem);
+    align-items: start;
+  }
+
+  @media (min-width: 760px) {
+    .detalles__grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  /* Imagen editorial + texto, sin caja con sombra (impeccable/taste) */
+  .evento {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .evento__foto {
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    background: color-mix(in srgb, var(--color-sand) 28%, var(--color-bone));
+    border: 1px solid var(--color-hairline);
+    display: grid;
+    place-items: center;
+  }
+
+  .evento__foto img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 1.2s var(--ease-elegant);
+  }
+
+  .evento:hover .evento__foto img {
+    transform: scale(1.04);
+  }
+
+  .evento__foto-ph {
+    padding: 4rem 1rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--color-ink) 40%, transparent);
+  }
+
+  .evento__body {
+    text-align: center;
+    padding-top: 1.6rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .evento__kicker {
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    font-size: 0.72rem;
+    color: var(--color-sage);
+  }
+
+  .evento__hora {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: clamp(1.8rem, 5vw, 2.4rem);
+    color: var(--color-ink);
+  }
+
+  .evento__lugar {
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    color: var(--color-ink);
+  }
+
+  .evento__dir {
+    font-size: 0.9rem;
+    color: var(--color-ink-soft);
+    line-height: 1.6;
+    max-width: 22rem;
+  }
+
+  .evento__mapa {
+    margin-top: 0.9rem;
+    font-size: 0.78rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-ink);
+    text-decoration: none;
+    border-bottom: 1px solid var(--color-gold);
+    padding-bottom: 2px;
+    transition:
+      color 0.3s var(--ease-elegant),
+      transform 0.4s var(--ease-spring);
+    display: inline-block;
+  }
+
+  .evento__mapa:hover {
+    color: var(--color-sage);
+    transform: translateY(-1px);
+  }
+</style>

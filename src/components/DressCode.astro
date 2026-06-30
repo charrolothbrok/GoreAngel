@@ -1,0 +1,110 @@
+---
+interface Vestimenta {
+  etiqueta?: string
+  descripcion?: string
+  nota?: string
+}
+
+interface Props {
+  data?: Vestimenta
+}
+
+const { data = {} } = Astro.props
+
+const etiqueta = data.etiqueta || 'Formal'
+const descripcion =
+  data.descripcion ||
+  'Te pedimos vestir formal para acompañarnos en este día tan especial.'
+const nota = data.nota || ''
+---
+
+<section id="vestimenta" class="dress">
+  <div class="shell dress__inner" data-reveal>
+    <p class="eyebrow">Código de vestimenta</p>
+
+    <div class="dress__ornament" aria-hidden="true">
+      <span class="dress__line"></span>
+      <svg class="dress__tie" viewBox="0 0 56 28" fill="currentColor">
+        <polygon points="28,14 5,4 5,24" />
+        <polygon points="28,14 51,4 51,24" />
+        <rect x="25" y="9.5" width="6" height="9" rx="1.6" />
+      </svg>
+      <span class="dress__line"></span>
+    </div>
+
+    <h2 class="dress__etiqueta">{etiqueta}</h2>
+    <p class="dress__desc">{descripcion}</p>
+
+    {
+      nota && (
+        <p class="dress__nota">
+          <span class="dress__nota-mark">✦</span>
+          {nota}
+        </p>
+      )
+    }
+  </div>
+</section>
+
+<style>
+  .dress {
+    padding-block: clamp(5rem, 12vw, 9rem);
+  }
+
+  .dress__inner {
+    max-width: 36rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .dress__ornament {
+    display: flex;
+    align-items: center;
+    gap: 1.1rem;
+    margin-block: 0.6rem;
+  }
+  .dress__line {
+    display: block;
+    width: clamp(2.5rem, 8vw, 4rem);
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--color-gold));
+  }
+  .dress__line:last-child {
+    background: linear-gradient(to left, transparent, var(--color-gold));
+  }
+  .dress__tie {
+    width: clamp(2.4rem, 7vw, 3rem);
+    height: auto;
+    color: var(--color-sage-dark);
+  }
+
+  .dress__etiqueta {
+    font-size: clamp(2.2rem, 7vw, 3.6rem);
+    line-height: 1;
+  }
+
+  .dress__desc {
+    color: var(--color-ink-soft);
+    font-size: 1.05rem;
+    line-height: 1.7;
+    max-width: 30rem;
+  }
+
+  .dress__nota {
+    margin-top: 0.8rem;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 1.15rem;
+    color: var(--color-sage-dark);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .dress__nota-mark {
+    color: var(--color-gold);
+    font-style: normal;
+  }
+</style>

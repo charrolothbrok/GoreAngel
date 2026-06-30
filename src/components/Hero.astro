@@ -1,0 +1,163 @@
+---
+interface Props {
+  novia?: string
+  novio?: string
+  fecha?: string
+  lugar?: string
+}
+
+const {
+  novia = 'Goretti',
+  novio = 'Ángel',
+  fecha = '22 de Agosto, 2026',
+  lugar = 'Aguascalientes, México',
+} = Astro.props
+---
+
+<section class="hero">
+  <div class="hero__inner shell">
+    <p class="eyebrow hero__eyebrow" data-reveal>Nuestra boda</p>
+
+    <h1 class="hero__names">
+      <span class="hero__name" data-reveal style="--reveal-delay: 80ms;">{novio}</span>
+      <span class="hero__amp" data-reveal style="--reveal-delay: 200ms;">&amp;</span>
+      <span class="hero__name" data-reveal style="--reveal-delay: 320ms;">{novia}</span>
+    </h1>
+
+    <div class="hero__meta" data-reveal style="--reveal-delay: 460ms;">
+      <span class="hero__rule"></span>
+      <p class="hero__date">{fecha}</p>
+      <p class="hero__place">{lugar}</p>
+      <span class="hero__rule"></span>
+    </div>
+  </div>
+
+  <a href="#historia" class="hero__scroll" aria-label="Desplázate para ver más">
+    <span class="hero__scroll-dot"></span>
+  </a>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    min-height: 100svh;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+  }
+
+  /* Fondo sutil entintado, sin colores planos (impeccable) */
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(120% 80% at 50% 0%, rgba(124, 138, 110, 0.1), transparent 60%),
+      radial-gradient(100% 70% at 50% 100%, rgba(217, 199, 179, 0.18), transparent 55%);
+    pointer-events: none;
+  }
+
+  .hero__inner {
+    position: relative;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+  }
+
+  .hero__eyebrow {
+    margin-bottom: 0.5rem;
+  }
+
+  .hero__names {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.1em;
+    line-height: 0.92;
+    margin: 0;
+  }
+
+  .hero__name {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(3.5rem, 15vw, 11rem);
+    letter-spacing: -0.02em;
+  }
+
+  .hero__amp {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 400;
+    color: var(--color-sage);
+    font-size: clamp(2rem, 7vw, 4.5rem);
+    line-height: 1;
+  }
+
+  .hero__meta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.9rem;
+    margin-top: 1rem;
+  }
+
+  .hero__rule {
+    width: 1px;
+    height: 2.5rem;
+    background: linear-gradient(var(--color-gold), transparent);
+  }
+
+  .hero__meta .hero__rule:last-child {
+    background: linear-gradient(transparent, var(--color-gold));
+  }
+
+  .hero__date {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: clamp(1.3rem, 3.5vw, 1.9rem);
+    color: var(--color-ink);
+  }
+
+  .hero__place {
+    font-size: 0.85rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-ink-soft);
+  }
+
+  /* Indicador de scroll con pulso orgánico (emilkowalski) */
+  .hero__scroll {
+    position: absolute;
+    bottom: 2.2rem;
+    left: 50%;
+    translate: -50% 0;
+    width: 26px;
+    height: 42px;
+    border: 1px solid var(--color-hairline);
+    border-radius: 999px;
+    display: grid;
+    place-items: start center;
+    padding-top: 7px;
+  }
+
+  .hero__scroll-dot {
+    width: 4px;
+    height: 8px;
+    border-radius: 999px;
+    background: var(--color-sage);
+    animation: scroll-cue 1.8s var(--ease-elegant) infinite;
+  }
+
+  @keyframes scroll-cue {
+    0% { transform: translateY(0); opacity: 0; }
+    30% { opacity: 1; }
+    60% { transform: translateY(12px); opacity: 0; }
+    100% { transform: translateY(12px); opacity: 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero__scroll-dot { animation: none; }
+  }
+</style>

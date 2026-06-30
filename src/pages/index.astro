@@ -1,17 +1,189 @@
 ---
+// Render en el servidor en cada visita: así los cambios del admin
+// (lugares, itinerario, vestimenta, música) se ven al instante.
+export const prerender = false
 
+import Layout from '../layouts/Layout.astro'
+import Hero from '../components/Hero.astro'
+import Ceremony from '../components/Ceremony.astro'
+import ItineraryShowcase from '../components/ItineraryShowcase.vue'
+import DressCode from '../components/DressCode.astro'
+import Petals from '../components/Petals.astro'
+import Welcome from '../components/Welcome.vue'
+import Countdown from '../components/Countdown.vue'
+import Gallery from '../components/Gallery.vue'
+import Rsvp from '../components/Rsvp.vue'
+import GiftTable from '../components/GiftTable.vue'
+import MusicPlayer from '../components/MusicPlayer.vue'
+import { supabase } from '../lib/supabase'
+
+// Lee toda la configuración de una vez (la llena el panel admin en la Fase 3)
+const { data: configRows } = await supabase
+  .from('configuracion')
+  .select('clave, valor')
+
+function leerConfig(clave: string): any {
+  const row = configRows?.find((r) => r.clave === clave)
+  if (!row?.valor) return {}
+  try {
+    return JSON.parse(row.valor)
+  } catch {
+    return {}
+  }
+}
+
+const venues = leerConfig('venues')
+const ceremonia = venues.ceremonia
+const recepcion = venues.recepcion
+const mesaRegalos = leerConfig('mesa_regalos')
+const musica = leerConfig('musica_url')
+const itinerario = leerConfig('itinerario')
+const vestimenta = leerConfig('vestimenta')
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Layout>
+  <Welcome novio="Ángel" novia="Goretti" fecha="22 de Agosto, 2026" client:load />
+
+  <Petals />
+
+  <Hero />
+
+  <!-- Intro / cuenta regresiva -->
+  <section id="historia" class="section section--center">
+    <div class="shell">
+      <p class="eyebrow" data-reveal>Comienza la cuenta</p>
+      <p class="lead" data-reveal style="--reveal-delay: 100ms;">
+        Después de un camino juntos, hemos decidido unir nuestras vidas.
+        Nos encantaría que seas parte de este día.
+      </p>
+      <div data-reveal style="--reveal-delay: 220ms;">
+        <Countdown client:visible />
+      </div>
+    </div>
+  </section>
+
+  <!-- Galería -->
+  <section id="galeria" class="section">
+    <div class="shell">
+      <header class="section__head" data-reveal>
+        <p class="eyebrow">Nosotros</p>
+        <h2 class="section__title">Nuestra historia en imágenes</h2>
+      </header>
+    </div>
+    <div data-reveal>
+      <Gallery client:visible />
+    </div>
+  </section>
+
+  <!-- Detalles del evento -->
+  <Ceremony ceremonia={ceremonia} recepcion={recepcion} />
+
+  <!-- Itinerario del día (interactivo) -->
+  <section id="itinerario" class="section">
+    <div class="shell">
+      <header class="section__head" data-reveal>
+        <p class="eyebrow">Cronograma</p>
+        <h2 class="section__title">Itinerario del día</h2>
+      </header>
+    </div>
+    <div data-reveal>
+      <ItineraryShowcase eventos={itinerario.eventos} client:visible />
+    </div>
+  </section>
+
+  <!-- Código de vestimenta -->
+  <DressCode data={vestimenta} />
+
+  <!-- Mesa de regalos -->
+  <section id="regalos" class="section">
+    <div class="shell">
+      <header class="section__head" data-reveal>
+        <p class="eyebrow">Con cariño</p>
+        <h2 class="section__title">Mesa de regalos</h2>
+      </header>
+      <GiftTable config={mesaRegalos} client:visible />
+    </div>
+  </section>
+
+  <!-- RSVP -->
+  <section id="rsvp" class="section section--rsvp">
+    <div class="shell">
+      <header class="section__head" data-reveal>
+        <p class="eyebrow">Confirma tu lugar</p>
+        <h2 class="section__title">¿Nos acompañas?</h2>
+        <p class="section__sub">
+          Te pedimos confirmar tu asistencia antes del 1.º de Agosto.
+        </p>
+      </header>
+      <div data-reveal style="--reveal-delay: 120ms;">
+        <Rsvp client:visible />
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <p class="footer__names">Ángel &amp; Goretti</p>
+    <p class="footer__date">22 · 08 · 2026</p>
+  </footer>
+
+  <!-- Música de fondo (aparece solo si hay URL configurada) -->
+  <MusicPlayer url={musica.url} client:load />
+</Layout>
+
+<style>
+  .section {
+    padding-block: clamp(5rem, 12vw, 9rem);
+  }
+
+  .section--center {
+    text-align: center;
+  }
+
+  .section--center .lead {
+    max-width: 36rem;
+    margin: 1.2rem auto clamp(2.5rem, 6vw, 4rem);
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: clamp(1.2rem, 3vw, 1.6rem);
+    line-height: 1.6;
+    color: var(--color-ink-soft);
+  }
+
+  .section__head {
+    text-align: center;
+    margin-bottom: clamp(2.5rem, 7vw, 4.5rem);
+  }
+
+  .section__title {
+    font-size: clamp(2.2rem, 6vw, 3.6rem);
+    margin-top: 0.6rem;
+  }
+
+  .section__sub {
+    margin-top: 1rem;
+    color: var(--color-ink-soft);
+  }
+
+  .section--rsvp {
+    background:
+      radial-gradient(100% 60% at 50% 0%, rgba(217, 199, 179, 0.16), transparent 60%);
+  }
+
+  .footer {
+    text-align: center;
+    padding-block: clamp(3rem, 8vw, 5rem);
+    border-top: 1px solid var(--color-hairline);
+  }
+
+  .footer__names {
+    font-family: var(--font-display);
+    font-size: clamp(1.8rem, 5vw, 2.6rem);
+  }
+
+  .footer__date {
+    margin-top: 0.4rem;
+    letter-spacing: 0.3em;
+    font-size: 0.8rem;
+    color: var(--color-ink-soft);
+  }
+</style>

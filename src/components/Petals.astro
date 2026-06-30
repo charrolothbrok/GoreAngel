@@ -1,0 +1,93 @@
+---
+// Pétalos cayendo: decorativo, sutil, sin JavaScript.
+// Cada pétalo tiene posición, tamaño, duración, retraso y color predefinidos
+// (deterministas, para no romper el build con aleatoriedad).
+const petalos = [
+  { left: 4, size: 14, dur: 14, delay: 0, color: 'blush', sway: 'a' },
+  { left: 12, size: 10, dur: 18, delay: 3, color: 'sand', sway: 'b' },
+  { left: 21, size: 16, dur: 12, delay: 6, color: 'blush', sway: 'a' },
+  { left: 30, size: 9, dur: 20, delay: 1, color: 'sage', sway: 'b' },
+  { left: 38, size: 13, dur: 16, delay: 8, color: 'sand', sway: 'a' },
+  { left: 47, size: 11, dur: 15, delay: 4, color: 'blush', sway: 'b' },
+  { left: 55, size: 15, dur: 13, delay: 9, color: 'sand', sway: 'a' },
+  { left: 63, size: 9, dur: 19, delay: 2, color: 'sage', sway: 'b' },
+  { left: 71, size: 14, dur: 14, delay: 7, color: 'blush', sway: 'a' },
+  { left: 79, size: 11, dur: 17, delay: 5, color: 'sand', sway: 'b' },
+  { left: 87, size: 16, dur: 12, delay: 10, color: 'blush', sway: 'a' },
+  { left: 94, size: 10, dur: 21, delay: 3, color: 'sage', sway: 'b' },
+];
+---
+
+<div class="petalos" aria-hidden="true">
+  {
+    petalos.map((p) => (
+      <span
+        class:list={['petalo', `petalo--${p.color}`, `sway-${p.sway}`]}
+        style={`left:${p.left}%; width:${p.size}px; height:${p.size * 1.3}px; animation-duration:${p.dur}s; animation-delay:-${p.delay}s;`}
+      />
+    ))
+  }
+</div>
+
+<style>
+  .petalos {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 5;
+    /* Promueve TODO el overlay a una sola capa estable (evita el bug de
+       repintado donde el contenido detrás no se redibuja al hacer scroll) */
+    transform: translateZ(0);
+  }
+
+  .petalo {
+    position: absolute;
+    top: -8%;
+    /* Forma de pétalo: redondeado en dos esquinas opuestas */
+    border-radius: 100% 0 100% 0;
+    opacity: 0;
+  }
+
+  /* Colores entintados, translúcidos (acorde a la paleta) */
+  .petalo--blush {
+    background: radial-gradient(circle at 30% 30%, rgba(224, 196, 196, 0.9), rgba(201, 160, 160, 0.7));
+  }
+  .petalo--sand {
+    background: radial-gradient(circle at 30% 30%, rgba(225, 210, 190, 0.9), rgba(217, 199, 179, 0.7));
+  }
+  .petalo--sage {
+    background: radial-gradient(circle at 30% 30%, rgba(168, 184, 154, 0.85), rgba(124, 138, 110, 0.65));
+  }
+
+  .sway-a {
+    animation-name: caer-a;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+  }
+  .sway-b {
+    animation-name: caer-b;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+  }
+
+  /* Caída con balanceo y giro (dos variantes para que no se vean iguales) */
+  @keyframes caer-a {
+    0% { transform: translateY(-10vh) translateX(0) rotate(0deg); opacity: 0; }
+    10% { opacity: 0.7; }
+    90% { opacity: 0.7; }
+    100% { transform: translateY(110vh) translateX(8vw) rotate(320deg); opacity: 0; }
+  }
+  @keyframes caer-b {
+    0% { transform: translateY(-10vh) translateX(0) rotate(0deg); opacity: 0; }
+    10% { opacity: 0.6; }
+    50% { transform: translateY(50vh) translateX(-6vw) rotate(180deg); }
+    90% { opacity: 0.6; }
+    100% { transform: translateY(110vh) translateX(4vw) rotate(380deg); opacity: 0; }
+  }
+
+  /* Accesibilidad: sin movimiento si el usuario lo prefiere */
+  @media (prefers-reduced-motion: reduce) {
+    .petalos { display: none; }
+  }
+</style>
