@@ -2,8 +2,8 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 
 const props = withDefaults(
-  defineProps<{ target?: string }>(),
-  { target: '2026-08-22T17:00:00' }
+  defineProps<{ target?: string; t?: Record<string, string> }>(),
+  { target: '2026-08-22T17:00:00', t: () => ({}) }
 )
 
 const now = ref(Date.now())
@@ -15,10 +15,10 @@ const parts = computed(() => {
   const diff = Math.max(0, targetMs.value - now.value)
   const s = Math.floor(diff / 1000)
   return [
-    { label: 'Días', value: Math.floor(s / 86400) },
-    { label: 'Horas', value: Math.floor((s % 86400) / 3600) },
-    { label: 'Minutos', value: Math.floor((s % 3600) / 60) },
-    { label: 'Segundos', value: s % 60 },
+    { label: props.t.cd_dias || 'Días', value: Math.floor(s / 86400) },
+    { label: props.t.cd_horas || 'Horas', value: Math.floor((s % 86400) / 3600) },
+    { label: props.t.cd_min || 'Minutos', value: Math.floor((s % 3600) / 60) },
+    { label: props.t.cd_seg || 'Segundos', value: s % 60 },
   ]
 })
 

@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 
-const props = defineProps<{ url?: string }>()
+const props = withDefaults(
+  defineProps<{ url?: string; t?: Record<string, string> }>(),
+  { t: () => ({}) }
+)
 
 const audio = ref<HTMLAudioElement | null>(null)
 const playing = ref(false)
@@ -59,7 +62,7 @@ onMounted(() => {
     <button
       class="music__btn"
       :class="{ 'music__btn--on': playing }"
-      :aria-label="playing ? 'Pausar música' : 'Reproducir música'"
+      :aria-label="playing ? (props.t.music_pause || 'Pausar música') : (props.t.music_play || 'Reproducir música')"
       @click="toggle"
     >
       <span class="music__bars" aria-hidden="true">

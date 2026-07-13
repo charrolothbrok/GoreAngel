@@ -4,19 +4,21 @@ interface Props {
   novio?: string
   fecha?: string
   lugar?: string
+  eyebrow?: string
 }
 
 const {
   novia = 'Goretti',
   novio = 'Ángel',
   fecha = '22 de Agosto, 2026',
-  lugar = 'Aguascalientes, México',
+  lugar = 'Zacatecas, México',
+  eyebrow = 'Nuestra boda',
 } = Astro.props
 ---
 
 <section class="hero">
   <div class="hero__inner shell">
-    <p class="eyebrow hero__eyebrow" data-reveal>Nuestra boda</p>
+    <p class="eyebrow hero__eyebrow" data-reveal>{eyebrow}</p>
 
     <h1 class="hero__names">
       <span class="hero__name" data-reveal style="--reveal-delay: 80ms;">{novio}</span>
@@ -68,6 +70,9 @@ const {
 
   .hero__eyebrow {
     margin-bottom: 0.5rem;
+    /* Un poco más grande y con más presencia */
+    font-size: clamp(0.85rem, 2.2vw, 1.05rem);
+    letter-spacing: 0.28em;
   }
 
   .hero__names {
@@ -84,6 +89,11 @@ const {
     font-weight: 500;
     font-size: clamp(3.5rem, 15vw, 11rem);
     letter-spacing: -0.02em;
+    /* Dorado metálico como el monograma */
+    background: linear-gradient(135deg, #c9a86a 0%, #b89b72 38%, #d8bd8a 62%, #a8875a 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
   }
 
   .hero__amp {

@@ -3,24 +3,27 @@ interface Vestimenta {
   etiqueta?: string
   descripcion?: string
   nota?: string
+  fotos?: string[]
 }
 
 interface Props {
   data?: Vestimenta
+  t?: Record<string, string>
 }
 
-const { data = {} } = Astro.props
+const { data = {}, t = {} } = Astro.props
 
 const etiqueta = data.etiqueta || 'Formal'
 const descripcion =
   data.descripcion ||
   'Te pedimos vestir formal para acompañarnos en este día tan especial.'
 const nota = data.nota || ''
+const fotos = data.fotos || []
 ---
 
 <section id="vestimenta" class="dress">
   <div class="shell dress__inner" data-reveal>
-    <p class="eyebrow">Código de vestimenta</p>
+    <p class="eyebrow">{t.dress_eyebrow || 'Código de vestimenta'}</p>
 
     <div class="dress__ornament" aria-hidden="true">
       <span class="dress__line"></span>
@@ -41,6 +44,18 @@ const nota = data.nota || ''
           <span class="dress__nota-mark">✦</span>
           {nota}
         </p>
+      )
+    }
+
+    {
+      fotos.length > 0 && (
+        <div class="dress__fotos">
+          {fotos.map((url) => (
+            <figure class="dress__foto">
+              <img src={url} alt="Ejemplo de vestimenta" loading="lazy" />
+            </figure>
+          ))}
+        </div>
       )
     }
   </div>
@@ -106,5 +121,29 @@ const nota = data.nota || ''
   .dress__nota-mark {
     color: var(--color-gold);
     font-style: normal;
+  }
+
+  .dress__fotos {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.8rem;
+    margin-top: 2rem;
+  }
+  .dress__foto {
+    width: clamp(120px, 30vw, 180px);
+    aspect-ratio: 3 / 4;
+    margin: 0;
+    overflow: hidden;
+    border: 1px solid var(--color-hairline);
+  }
+  .dress__foto img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 1.2s var(--ease-elegant);
+  }
+  .dress__foto:hover img {
+    transform: scale(1.05);
   }
 </style>

@@ -2,8 +2,8 @@
 import { ref, onMounted } from 'vue'
 
 const props = withDefaults(
-  defineProps<{ novio?: string; novia?: string; fecha?: string }>(),
-  { novio: 'Ángel', novia: 'Goretti', fecha: '22 de Agosto, 2026' }
+  defineProps<{ novio?: string; novia?: string; fecha?: string; t?: Record<string, string> }>(),
+  { novio: 'Ángel', novia: 'Goretti', fecha: '22 de Agosto, 2026', t: () => ({}) }
 )
 
 const abierto = ref(false)
@@ -34,10 +34,10 @@ onMounted(() => {
 
         <button class="welcome__btn" @click="abrir">
           <span class="welcome__btn-ico" aria-hidden="true">✉</span>
-          Abrir invitación
+          {{ props.t.welcome_open || 'Abrir invitación' }}
         </button>
 
-        <p class="welcome__hint">Toca para abrir</p>
+        <p class="welcome__hint">{{ props.t.welcome_hint || 'Toca para abrir' }}</p>
       </div>
     </div>
   </Transition>

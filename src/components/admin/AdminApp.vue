@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, shallowRef } from 'vue'
 import { supabase } from '../../lib/supabase'
+import PortadaManager from './PortadaManager.vue'
 import InvitadosManager from './InvitadosManager.vue'
 import ConfirmacionesManager from './ConfirmacionesManager.vue'
 import MensajesManager from './MensajesManager.vue'
@@ -21,6 +22,7 @@ const loginError = ref('')
 const entrando = ref(false)
 
 const tabs = [
+  { id: 'portada', label: 'Portada', comp: PortadaManager },
   { id: 'invitados', label: 'Invitados', comp: InvitadosManager },
   { id: 'confirmaciones', label: 'Confirmaciones', comp: ConfirmacionesManager },
   { id: 'mensajes', label: 'Mensajes', comp: MensajesManager },

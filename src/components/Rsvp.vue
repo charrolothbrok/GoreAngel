@@ -2,6 +2,12 @@
 import { reactive, ref } from 'vue'
 import { supabase } from '../lib/supabase'
 
+const props = withDefaults(
+  defineProps<{ t?: Record<string, string> }>(),
+  { t: () => ({}) }
+)
+const tr = (k: string, fb: string) => props.t[k] || fb
+
 const form = reactive({
   nombre: '',
   lado: '' as '' | 'novio' | 'novia',
@@ -19,14 +25,14 @@ const error = ref('')
 async function submit() {
   error.value = ''
   if (!form.nombre.trim()) {
-    error.value = 'Por favor escribe tu nombre o el de tu familia.'
+    error.value = tr('rsvp_err_nombre', 'Por favor escribe tu nombre o el de tu familia.')
     return
   }
   loading.value = true
   const { error: err } = await supabase.from('confirmaciones').insert([{ ...form }])
   loading.value = false
   if (err) {
-    error.value = 'Ocurrió un error al enviar. Inténtalo de nuevo.'
+    error.value = tr('rsvp_err_envio', 'Ocurrió un error al enviar. Inténtalo de nuevo.')
     return
   }
   done.value = true
@@ -38,24 +44,24 @@ async function submit() {
   <transition name="fade" mode="out-in">
     <div v-if="done" key="done" class="rsvp__done">
       <p class="rsvp__done-mark">✦</p>
-      <h3 class="rsvp__done-title">¡Gracias, {{ form.nombre }}!</h3>
+      <h3 class="rsvp__done-title">{{ tr('rsvp_gracias', '¡Gracias') }}, {{ form.nombre }}!</h3>
       <p class="rsvp__done-text">
         {{
           form.asistira
-            ? 'Hemos recibido tu confirmación. ¡No podemos esperar a celebrar contigo!'
-            : 'Lamentamos que no puedas acompañarnos. Gracias por avisarnos con cariño.'
+            ? tr('rsvp_ok_si', 'Hemos recibido tu confirmación. ¡No podemos esperar a celebrar contigo!')
+            : tr('rsvp_ok_no', 'Lamentamos que no puedas acompañarnos. Gracias por avisarnos con cariño.')
         }}
       </p>
     </div>
 
     <form v-else key="form" class="rsvp" @submit.prevent="submit">
       <div class="field">
-        <label class="field__label">Nombre o familia *</label>
-        <input v-model="form.nombre" class="field__input" placeholder="Ej. Familia Torres" />
+        <label class="field__label">{{ tr('rsvp_nombre', 'Nombre o familia *') }}</label>
+        <input v-model="form.nombre" class="field__input" :placeholder="tr('rsvp_nombre_ph', 'Ej. Familia Torres')" />
       </div>
 
       <div class="field">
-        <label class="field__label">¿Invitado de…?</label>
+        <label class="field__label">{{ tr('rsvp_lado', '¿Invitado de…?') }}</label>
         <div class="choices">
           <button
             v-for="opt in [
@@ -74,12 +80,12 @@ async function submit() {
       </div>
 
       <div class="field">
-        <label class="field__label">WhatsApp / Teléfono</label>
+        <label class="field__label">{{ tr('rsvp_tel', 'WhatsApp / Teléfono') }}</label>
         <input v-model="form.telefono" class="field__input" placeholder="+52 449 000 0000" />
       </div>
 
       <div class="field">
-        <label class="field__label">¿Asistirás?</label>
+        <label class="field__label">{{ tr('rsvp_asistir', '¿Asistirás?') }}</label>
         <div class="choices">
           <button
             type="button"
@@ -87,7 +93,7 @@ async function submit() {
             :class="{ 'choice--on': form.asistira }"
             @click="form.asistira = true"
           >
-            Sí, con gusto
+            {{ tr('rsvp_si', 'Sí, con gusto') }}
           </button>
           <button
             type="button"
@@ -95,14 +101,14 @@ async function submit() {
             :class="{ 'choice--on': !form.asistira }"
             @click="form.asistira = false"
           >
-            No podré
+            {{ tr('rsvp_no', 'No podré') }}
           </button>
         </div>
       </div>
 
       <transition name="fade">
         <div v-if="form.asistira" class="field">
-          <label class="field__label">Número de personas</label>
+          <label class="field__label">{{ tr('rsvp_personas', 'Número de personas') }}</label>
           <input
             v-model.number="form.num_personas"
             type="number"
@@ -115,28 +121,28 @@ async function submit() {
 
       <transition name="fade">
         <div v-if="form.asistira" class="field">
-          <label class="field__label">Restricción alimentaria</label>
+          <label class="field__label">{{ tr('rsvp_restriccion', 'Restricción alimentaria') }}</label>
           <input
             v-model="form.restriccion_alimentaria"
             class="field__input"
-            placeholder="Vegetariano, alergias, ninguna…"
+            :placeholder="tr('rsvp_restriccion_ph', 'Vegetariano, alergias, ninguna…')"
           />
         </div>
       </transition>
 
       <div class="field">
-        <label class="field__label">Mensaje para los novios</label>
+        <label class="field__label">{{ tr('rsvp_mensaje', 'Mensaje para los novios') }}</label>
         <textarea
           v-model="form.mensaje"
           class="field__input field__textarea"
-          placeholder="Un mensaje con cariño…"
+          :placeholder="tr('rsvp_mensaje_ph', 'Un mensaje con cariño…')"
         ></textarea>
       </div>
 
       <p v-if="error" class="rsvp__error">{{ error }}</p>
 
       <button type="submit" class="rsvp__submit" :disabled="loading">
-        {{ loading ? 'Enviando…' : 'Confirmar asistencia' }}
+        {{ loading ? tr('rsvp_enviando', 'Enviando…') : tr('rsvp_btn', 'Confirmar asistencia') }}
       </button>
     </form>
   </transition>

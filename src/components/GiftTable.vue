@@ -21,9 +21,11 @@ interface MesaConfig {
   tarjetas?: Tarjeta[]
 }
 
-const props = withDefaults(defineProps<{ config?: MesaConfig }>(), {
-  config: () => ({}),
-})
+const props = withDefaults(
+  defineProps<{ config?: MesaConfig; t?: Record<string, string> }>(),
+  { config: () => ({}), t: () => ({}) }
+)
+const tr = (k: string, fb: string) => props.t[k] || fb
 
 const links = computed(() => props.config?.links ?? [])
 const tarjetas = computed(() => props.config?.tarjetas ?? [])
@@ -78,14 +80,14 @@ const avisoError = ref('')
 async function enviarAviso() {
   avisoError.value = ''
   if (!aviso.nombre.trim()) {
-    avisoError.value = 'Por favor escribe tu nombre.'
+    avisoError.value = tr('gifts_aviso_err_nombre', 'Por favor escribe tu nombre.')
     return
   }
   enviando.value = true
   const { error } = await supabase.from('mensajes_regalo').insert([{ ...aviso }])
   enviando.value = false
   if (error) {
-    avisoError.value = 'No se pudo enviar. Inténtalo de nuevo.'
+    avisoError.value = tr('gifts_aviso_err_envio', 'No se pudo enviar. Inténtalo de nuevo.')
     return
   }
   avisoListo.value = true
@@ -98,24 +100,23 @@ async function enviarAviso() {
       {{ config.mensaje_intro }}
     </p>
     <p v-else class="mesa__intro" data-reveal>
-      Tu presencia es nuestro mejor regalo. Pero si deseas tener un detalle con
-      nosotros, aquí te dejamos algunas opciones con todo el cariño.
+      {{ tr('gifts_intro_default', 'Tu presencia es nuestro mejor regalo. Pero si deseas tener un detalle con nosotros, aquí te dejamos algunas opciones con todo el cariño.') }}
     </p>
 
     <!-- Botones compactos -->
     <div class="mesa__cta" data-reveal>
       <button v-if="links.length" class="cta" @click="abrir('listas')">
-        <span class="cta__title">Listas de regalo</span>
-        <span class="cta__sub">Ver tiendas</span>
+        <span class="cta__title">{{ tr('gifts_listas_title', 'Listas de regalo') }}</span>
+        <span class="cta__sub">{{ tr('gifts_listas_sub', 'Ver tiendas') }}</span>
       </button>
       <button v-if="tarjetas.length" class="cta" @click="abrir('deposito')">
-        <span class="cta__title">Enviar un regalo</span>
-        <span class="cta__sub">Datos para depósito</span>
+        <span class="cta__title">{{ tr('gifts_enviar_title', 'Enviar un regalo') }}</span>
+        <span class="cta__sub">{{ tr('gifts_enviar_sub', 'Datos para depósito') }}</span>
       </button>
     </div>
 
     <p v-if="!links.length && !tarjetas.length" class="mesa__empty" data-reveal>
-      Pronto compartiremos aquí los detalles.
+      {{ tr('gifts_empty', 'Pronto compartiremos aquí los detalles.') }}
     </p>
   </div>
 
@@ -131,7 +132,7 @@ async function enviarAviso() {
                 :class="{ 'stab--on': vista === 'listas' }"
                 @click="vista = 'listas'"
               >
-                Listas
+                {{ tr('gifts_tab_listas', 'Listas') }}
               </button>
               <button
                 v-if="tarjetas.length"
@@ -139,7 +140,7 @@ async function enviarAviso() {
                 :class="{ 'stab--on': vista === 'deposito' }"
                 @click="vista = 'deposito'"
               >
-                Depósito
+                {{ tr('gifts_tab_deposito', 'Depósito') }}
               </button>
             </div>
             <button class="sheet__close" aria-label="Cerrar" @click="cerrar">✕</button>
@@ -157,7 +158,7 @@ async function enviarAviso() {
                 class="store"
               >
                 <img v-if="link.iconUrl" :src="link.iconUrl" alt="" class="store__icon" />
-                <span class="store__name">{{ link.label || 'Ver lista' }}</span>
+                <span class="store__name">{{ link.label || tr('gifts_ver_lista', 'Ver lista') }}</span>
                 <span class="store__arrow">→</span>
               </a>
             </div>
@@ -180,7 +181,7 @@ async function enviarAviso() {
                       class="campo__copy"
                       @click="copy(f.value as string, `${i}-${f.label}`)"
                     >
-                      {{ copied === `${i}-${f.label}` ? '✓ Copiado' : 'Copiar' }}
+                      {{ copied === `${i}-${f.label}` ? tr('gifts_copiado', '✓ Copiado') : tr('gifts_copiar', 'Copiar') }}
                     </button>
                   </li>
                 </ul>
@@ -190,23 +191,23 @@ async function enviarAviso() {
               <div class="aviso-wrap">
                 <Transition name="fade" mode="out-in">
                   <p v-if="avisoListo" key="ok" class="aviso-ok">
-                    ¡Gracias por avisarnos! Lo recibimos con mucho cariño. 💚
+                    {{ tr('gifts_aviso_ok', '¡Gracias por avisarnos! Lo recibimos con mucho cariño. 💚') }}
                   </p>
                   <form v-else key="form" class="aviso" @submit.prevent="enviarAviso">
-                    <p class="aviso__label">¿Nos avisas de tu regalo? (opcional)</p>
-                    <input v-model="aviso.nombre" class="aviso__input" placeholder="Tu nombre *" />
+                    <p class="aviso__label">{{ tr('gifts_aviso_label', '¿Nos avisas de tu regalo? (opcional)') }}</p>
+                    <input v-model="aviso.nombre" class="aviso__input" :placeholder="tr('gifts_aviso_nombre', 'Tu nombre *')" />
                     <div class="aviso__row">
-                      <input v-model="aviso.metodo" class="aviso__input" placeholder="Método" />
-                      <input v-model="aviso.monto" class="aviso__input" placeholder="Monto (opcional)" />
+                      <input v-model="aviso.metodo" class="aviso__input" :placeholder="tr('gifts_aviso_metodo', 'Método')" />
+                      <input v-model="aviso.monto" class="aviso__input" :placeholder="tr('gifts_aviso_monto', 'Monto (opcional)')" />
                     </div>
                     <textarea
                       v-model="aviso.mensaje"
                       class="aviso__input aviso__ta"
-                      placeholder="Un mensaje para los novios…"
+                      :placeholder="tr('gifts_aviso_msg', 'Un mensaje para los novios…')"
                     ></textarea>
                     <p v-if="avisoError" class="aviso__error">{{ avisoError }}</p>
                     <button type="submit" class="aviso__btn" :disabled="enviando">
-                      {{ enviando ? 'Enviando…' : 'Avisar de mi regalo' }}
+                      {{ enviando ? tr('gifts_aviso_enviando', 'Enviando…') : tr('gifts_aviso_btn', 'Avisar de mi regalo') }}
                     </button>
                   </form>
                 </Transition>

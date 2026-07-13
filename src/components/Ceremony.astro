@@ -11,27 +11,28 @@ interface Evento {
 interface Props {
   ceremonia?: Evento
   recepcion?: Evento
+  t?: Record<string, string>
 }
 
+const { ceremonia, recepcion, t = {} } = Astro.props
+
 const FALLBACK_CEREMONIA: Evento = {
-  titulo: 'Ceremonia',
+  titulo: t.ceremonia || 'Ceremonia',
   hora: '5:00 PM',
-  lugar: 'Por confirmar',
-  direccion: 'Aguascalientes, México',
+  lugar: t.lugar_ph || 'Por confirmar',
+  direccion: 'Zacatecas, México',
   mapa: '',
   imagen: '',
 }
 
 const FALLBACK_RECEPCION: Evento = {
-  titulo: 'Recepción',
+  titulo: t.recepcion || 'Recepción',
   hora: '7:00 PM',
-  lugar: 'Por confirmar',
-  direccion: 'Aguascalientes, México',
+  lugar: t.lugar_ph || 'Por confirmar',
+  direccion: 'Zacatecas, México',
   mapa: '',
   imagen: '',
 }
-
-const { ceremonia = FALLBACK_CEREMONIA, recepcion = FALLBACK_RECEPCION } = Astro.props
 
 // Quita campos vacíos para que el fallback aplique cuando el admin los dejó en blanco
 function soloLlenos(obj: Partial<Evento> = {}): Partial<Evento> {
@@ -42,16 +43,16 @@ function soloLlenos(obj: Partial<Evento> = {}): Partial<Evento> {
 
 // Mezcla fallback + solo los campos que el admin sí llenó
 const eventos = [
-  { ...FALLBACK_CEREMONIA, titulo: 'Ceremonia', ...soloLlenos(ceremonia) },
-  { ...FALLBACK_RECEPCION, titulo: 'Recepción', ...soloLlenos(recepcion) },
+  { ...FALLBACK_CEREMONIA, ...soloLlenos(ceremonia) },
+  { ...FALLBACK_RECEPCION, ...soloLlenos(recepcion) },
 ]
 ---
 
 <section id="detalles" class="detalles">
   <div class="shell">
     <header class="detalles__head" data-reveal>
-      <p class="eyebrow">El gran día</p>
-      <h2 class="detalles__title">Detalles del evento</h2>
+      <p class="eyebrow">{t.detalles_eyebrow || 'El gran día'}</p>
+      <h2 class="detalles__title">{t.detalles_title || 'Detalles del evento'}</h2>
     </header>
 
     <div class="detalles__grid">
@@ -62,7 +63,7 @@ const eventos = [
               {ev.imagen ? (
                 <img src={ev.imagen} alt={`Lugar: ${ev.lugar}`} loading="lazy" />
               ) : (
-                <span class="evento__foto-ph">Imagen del lugar</span>
+                <span class="evento__foto-ph">{t.foto_lugar_ph || 'Imagen del lugar'}</span>
               )}
             </div>
 
@@ -74,7 +75,7 @@ const eventos = [
 
               {ev.mapa && (
                 <a class="evento__mapa" href={ev.mapa} target="_blank" rel="noopener">
-                  Cómo llegar →
+                  {t.como_llegar || 'Cómo llegar →'}
                 </a>
               )}
             </div>

@@ -2,6 +2,11 @@
 import { ref, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { supabase } from '../lib/supabase'
 
+const props = withDefaults(
+  defineProps<{ t?: Record<string, string> }>(),
+  { t: () => ({}) }
+)
+
 interface Photo {
   name: string
   url: string
@@ -107,8 +112,10 @@ onUnmounted(() => ro?.disconnect())
 
   <!-- Vacío -->
   <div v-else-if="!photos.length" class="gstate gempty">
-    <p class="eyebrow">Galería</p>
-    <p class="gempty__txt">Pronto compartiremos aquí nuestras fotografías favoritas.</p>
+    <p class="eyebrow">{{ props.t.gallery_empty_eyebrow || 'Galería' }}</p>
+    <p class="gempty__txt">
+      {{ props.t.gallery_empty_text || 'Pronto compartiremos aquí nuestras fotografías favoritas.' }}
+    </p>
   </div>
 
   <!-- Carrusel -->

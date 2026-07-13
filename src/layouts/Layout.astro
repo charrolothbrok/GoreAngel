@@ -4,16 +4,18 @@ import '../styles/global.css'
 interface Props {
   title?: string
   description?: string
+  lang?: string
 }
 
 const {
   title = 'Ángel & Goretti · 22 de Agosto 2026',
   description = 'Nos casamos. Acompáñanos a celebrar nuestro amor.',
+  lang = 'es',
 } = Astro.props
 ---
 
 <!doctype html>
-<html lang="es">
+<html lang={lang}>
   <head>
     <meta charset="utf-8" />
 

@@ -16,6 +16,12 @@ import Rsvp from '../components/Rsvp.vue'
 import GiftTable from '../components/GiftTable.vue'
 import MusicPlayer from '../components/MusicPlayer.vue'
 import { supabase } from '../lib/supabase'
+import { getLang, translations } from '../i18n'
+
+// Idioma (español por defecto, ?lang=en para inglés)
+const lang = getLang(Astro.url)
+const t = translations[lang]
+const otroLang = lang === 'es' ? 'en' : 'es'
 
 // Lee toda la configuración de una vez (la llena el panel admin en la Fase 3)
 const { data: configRows } = await supabase
@@ -39,25 +45,38 @@ const mesaRegalos = leerConfig('mesa_regalos')
 const musica = leerConfig('musica_url')
 const itinerario = leerConfig('itinerario')
 const vestimenta = leerConfig('vestimenta')
+
+// Portada editable (lugar + texto de intro)
+const portada = leerConfig('portada')
+const lugar = portada.lugar || 'Zacatecas, México'
+const introTexto =
+  portada.intro_texto ||
+  'Después de un camino juntos, hemos decidido unir nuestras vidas. Nos encantaría que seas parte de este día.'
 ---
 
-<Layout>
-  <Welcome novio="Ángel" novia="Goretti" fecha="22 de Agosto, 2026" client:load />
+<Layout lang={lang}>
+  <!-- Botón de idioma -->
+  <a class="lang-toggle" href={`?lang=${otroLang}`} aria-label="Cambiar idioma">
+    <span class={lang === 'es' ? 'lang-on' : ''}>ES</span>
+    <span class="lang-sep">/</span>
+    <span class={lang === 'en' ? 'lang-on' : ''}>EN</span>
+  </a>
+
+  <Welcome novio="Ángel" novia="Goretti" fecha={t.fecha} t={t} client:load />
 
   <Petals />
 
-  <Hero />
+  <Hero lugar={lugar} fecha={t.fecha} eyebrow={t.hero_eyebrow} />
 
   <!-- Intro / cuenta regresiva -->
   <section id="historia" class="section section--center">
     <div class="shell">
-      <p class="eyebrow" data-reveal>Comienza la cuenta</p>
+      <p class="eyebrow" data-reveal>{t.intro_eyebrow}</p>
       <p class="lead" data-reveal style="--reveal-delay: 100ms;">
-        Después de un camino juntos, hemos decidido unir nuestras vidas.
-        Nos encantaría que seas parte de este día.
+        {introTexto}
       </p>
       <div data-reveal style="--reveal-delay: 220ms;">
-        <Countdown client:visible />
+        <Countdown t={t} client:visible />
       </div>
     </div>
   </section>
@@ -66,24 +85,24 @@ const vestimenta = leerConfig('vestimenta')
   <section id="galeria" class="section">
     <div class="shell">
       <header class="section__head" data-reveal>
-        <p class="eyebrow">Nosotros</p>
-        <h2 class="section__title">Nuestra historia en imágenes</h2>
+        <p class="eyebrow">{t.gallery_eyebrow}</p>
+        <h2 class="section__title">{t.gallery_title}</h2>
       </header>
     </div>
     <div data-reveal>
-      <Gallery client:visible />
+      <Gallery t={t} client:visible />
     </div>
   </section>
 
   <!-- Detalles del evento -->
-  <Ceremony ceremonia={ceremonia} recepcion={recepcion} />
+  <Ceremony ceremonia={ceremonia} recepcion={recepcion} t={t} />
 
   <!-- Itinerario del día (interactivo) -->
   <section id="itinerario" class="section">
     <div class="shell">
       <header class="section__head" data-reveal>
-        <p class="eyebrow">Cronograma</p>
-        <h2 class="section__title">Itinerario del día</h2>
+        <p class="eyebrow">{t.itin_eyebrow}</p>
+        <h2 class="section__title">{t.itin_title}</h2>
       </header>
     </div>
     <div data-reveal>
@@ -92,16 +111,16 @@ const vestimenta = leerConfig('vestimenta')
   </section>
 
   <!-- Código de vestimenta -->
-  <DressCode data={vestimenta} />
+  <DressCode data={vestimenta} t={t} />
 
   <!-- Mesa de regalos -->
   <section id="regalos" class="section">
     <div class="shell">
       <header class="section__head" data-reveal>
-        <p class="eyebrow">Con cariño</p>
-        <h2 class="section__title">Mesa de regalos</h2>
+        <p class="eyebrow">{t.gifts_eyebrow}</p>
+        <h2 class="section__title">{t.gifts_title}</h2>
       </header>
-      <GiftTable config={mesaRegalos} client:visible />
+      <GiftTable config={mesaRegalos} t={t} client:visible />
     </div>
   </section>
 
@@ -109,14 +128,12 @@ const vestimenta = leerConfig('vestimenta')
   <section id="rsvp" class="section section--rsvp">
     <div class="shell">
       <header class="section__head" data-reveal>
-        <p class="eyebrow">Confirma tu lugar</p>
-        <h2 class="section__title">¿Nos acompañas?</h2>
-        <p class="section__sub">
-          Te pedimos confirmar tu asistencia antes del 1.º de Agosto.
-        </p>
+        <p class="eyebrow">{t.rsvp_eyebrow}</p>
+        <h2 class="section__title">{t.rsvp_title}</h2>
+        <p class="section__sub">{t.rsvp_sub}</p>
       </header>
       <div data-reveal style="--reveal-delay: 120ms;">
-        <Rsvp client:visible />
+        <Rsvp t={t} client:visible />
       </div>
     </div>
   </section>
@@ -127,10 +144,34 @@ const vestimenta = leerConfig('vestimenta')
   </footer>
 
   <!-- Música de fondo (aparece solo si hay URL configurada) -->
-  <MusicPlayer url={musica.url} client:load />
+  <MusicPlayer url={musica.url} t={t} client:load />
 </Layout>
 
 <style>
+  /* Botón de idioma */
+  .lang-toggle {
+    position: fixed;
+    top: clamp(1rem, 3vw, 1.6rem);
+    left: clamp(1rem, 4vw, 2rem);
+    z-index: 60;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 0.9rem;
+    border: 1px solid var(--color-hairline);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--color-bone) 80%, transparent);
+    backdrop-filter: blur(8px);
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    color: var(--color-ink-soft);
+    text-decoration: none;
+    transition: transform 0.4s var(--ease-spring), border-color 0.3s;
+  }
+  .lang-toggle:hover { transform: scale(1.05); border-color: var(--color-sage); }
+  .lang-toggle .lang-on { color: var(--color-sage); font-weight: 600; }
+  .lang-sep { color: var(--color-sand); }
+
   .section {
     padding-block: clamp(5rem, 12vw, 9rem);
   }
