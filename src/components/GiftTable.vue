@@ -233,6 +233,7 @@ async function enviarAviso() {
   color: var(--color-ink-soft);
   line-height: 1.6;
   margin-bottom: clamp(2rem, 5vw, 3rem);
+  white-space: pre-line;
 }
 
 .mesa__cta {
