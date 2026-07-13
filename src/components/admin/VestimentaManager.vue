@@ -3,8 +3,11 @@ import { ref, onMounted } from 'vue'
 import { getConfig, saveConfig, uploadImagen } from '../../lib/config'
 
 const etiqueta = ref('')
+const etiquetaEn = ref('')
 const descripcion = ref('')
+const descripcionEn = ref('')
 const nota = ref('')
+const notaEn = ref('')
 const fotos = ref<string[]>([])
 const cargando = ref(true)
 const guardando = ref(false)
@@ -14,8 +17,11 @@ const subiendo = ref(false)
 async function cargar() {
   const c = await getConfig('vestimenta')
   etiqueta.value = c.etiqueta ?? ''
+  etiquetaEn.value = c.etiqueta_en ?? ''
   descripcion.value = c.descripcion ?? ''
+  descripcionEn.value = c.descripcion_en ?? ''
   nota.value = c.nota ?? ''
+  notaEn.value = c.nota_en ?? ''
   fotos.value = c.fotos ?? []
   cargando.value = false
 }
@@ -43,8 +49,11 @@ async function guardar() {
   guardado.value = false
   await saveConfig('vestimenta', {
     etiqueta: etiqueta.value,
+    etiqueta_en: etiquetaEn.value,
     descripcion: descripcion.value,
+    descripcion_en: descripcionEn.value,
     nota: nota.value,
+    nota_en: notaEn.value,
     fotos: fotos.value,
   })
   guardando.value = false
@@ -59,25 +68,45 @@ onMounted(cargar)
   <div v-if="cargando" class="muted">Cargando…</div>
   <div v-else class="wrap">
     <label class="f">
-      <span>Etiqueta / tipo</span>
+      <span>Etiqueta / tipo (español)</span>
       <input v-model="etiqueta" class="inp" placeholder="Ej. Formal, Etiqueta rigurosa, Coctel…" />
+    </label>
+    <label class="f">
+      <span>🇬🇧 Etiqueta / tipo (inglés)</span>
+      <input v-model="etiquetaEn" class="inp" placeholder="E.g. Formal, Black tie, Cocktail…" />
     </label>
 
     <label class="f">
-      <span>Descripción</span>
+      <span>Descripción (español)</span>
       <textarea
         v-model="descripcion"
         class="inp ta"
         placeholder="Ej. Te pedimos vestir formal para acompañarnos…"
       ></textarea>
     </label>
+    <label class="f">
+      <span>🇬🇧 Descripción (inglés)</span>
+      <textarea
+        v-model="descripcionEn"
+        class="inp ta"
+        placeholder="E.g. We kindly ask you to dress formally…"
+      ></textarea>
+    </label>
 
     <label class="f">
-      <span>Nota especial (opcional)</span>
+      <span>Nota especial — español (opcional)</span>
       <input
         v-model="nota"
         class="inp"
         placeholder="Ej. El color blanco está reservado para la novia"
+      />
+    </label>
+    <label class="f">
+      <span>🇬🇧 Nota especial — inglés (opcional)</span>
+      <input
+        v-model="notaEn"
+        class="inp"
+        placeholder="E.g. White is reserved for the bride"
       />
     </label>
 

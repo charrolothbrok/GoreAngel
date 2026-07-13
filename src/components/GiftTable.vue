@@ -61,13 +61,13 @@ async function copy(value: string, key: string) {
   }
 }
 
-function campos(t: Tarjeta) {
+function campos(card: Tarjeta) {
   return [
-    { label: 'Banco', value: t.banco },
-    { label: 'Titular', value: t.titular },
-    { label: 'Cuenta', value: t.cuenta },
-    { label: 'CLABE', value: t.clabe },
-    { label: 'Concepto', value: t.concepto },
+    { label: tr('gift_banco', 'Banco'), value: card.banco },
+    { label: tr('gift_titular', 'Titular'), value: card.titular },
+    { label: tr('gift_cuenta', 'Cuenta'), value: card.cuenta },
+    { label: tr('gift_clabe', 'CLABE'), value: card.clabe },
+    { label: tr('gift_concepto', 'Concepto'), value: card.concepto },
   ].filter((f) => f.value)
 }
 

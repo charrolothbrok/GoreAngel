@@ -5,13 +5,15 @@ import { getConfig, saveConfig, uploadImagen } from '../../lib/config'
 interface Evento {
   hora: string
   lugar: string
+  lugar_en: string
   direccion: string
+  direccion_en: string
   mapa: string
   imagen: string
 }
 
 function vacio(): Evento {
-  return { hora: '', lugar: '', direccion: '', mapa: '', imagen: '' }
+  return { hora: '', lugar: '', lugar_en: '', direccion: '', direccion_en: '', mapa: '', imagen: '' }
 }
 
 const ceremonia = ref<Evento>(vacio())
@@ -76,12 +78,20 @@ onMounted(cargar)
           <input v-model="b.model.value.hora" class="inp" placeholder="5:00 PM" />
         </label>
         <label class="f">
-          <span>Lugar</span>
+          <span>Lugar (español)</span>
           <input v-model="b.model.value.lugar" class="inp" placeholder="Parroquia / Jardín…" />
         </label>
+        <label class="f">
+          <span>🇬🇧 Lugar (inglés)</span>
+          <input v-model="b.model.value.lugar_en" class="inp" placeholder="Church / Garden…" />
+        </label>
         <label class="f f--wide">
-          <span>Dirección</span>
+          <span>Dirección (español)</span>
           <input v-model="b.model.value.direccion" class="inp" placeholder="Calle, ciudad…" />
+        </label>
+        <label class="f f--wide">
+          <span>🇬🇧 Dirección (inglés)</span>
+          <input v-model="b.model.value.direccion_en" class="inp" placeholder="Street, city…" />
         </label>
         <label class="f f--wide">
           <span>Link de Google Maps</span>

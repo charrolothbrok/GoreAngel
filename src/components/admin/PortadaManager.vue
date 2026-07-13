@@ -4,6 +4,7 @@ import { getConfig, saveConfig } from '../../lib/config'
 
 const lugar = ref('')
 const introTexto = ref('')
+const introTextoEn = ref('')
 const cargando = ref(true)
 const guardando = ref(false)
 const guardado = ref(false)
@@ -14,6 +15,7 @@ async function cargar() {
   introTexto.value =
     c.intro_texto ??
     'Después de un camino juntos, hemos decidido unir nuestras vidas. Nos encantaría que seas parte de este día.'
+  introTextoEn.value = c.intro_texto_en ?? ''
   cargando.value = false
 }
 
@@ -23,6 +25,7 @@ async function guardar() {
   await saveConfig('portada', {
     lugar: lugar.value,
     intro_texto: introTexto.value,
+    intro_texto_en: introTextoEn.value,
   })
   guardando.value = false
   guardado.value = true
@@ -41,11 +44,20 @@ onMounted(cargar)
     </label>
 
     <label class="f">
-      <span>Texto de bienvenida (sección de la cuenta regresiva)</span>
+      <span>Texto de bienvenida (español)</span>
       <textarea
         v-model="introTexto"
         class="inp ta"
         placeholder="Después de un camino juntos, hemos decidido unir nuestras vidas…"
+      ></textarea>
+    </label>
+
+    <label class="f">
+      <span>🇬🇧 Texto de bienvenida (inglés) — se muestra al cambiar a EN</span>
+      <textarea
+        v-model="introTextoEn"
+        class="inp ta"
+        placeholder="After a journey together, we have decided to unite our lives…"
       ></textarea>
     </label>
 

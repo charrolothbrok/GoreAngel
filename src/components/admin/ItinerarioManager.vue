@@ -5,7 +5,9 @@ import { getConfig, saveConfig, uploadImagen } from '../../lib/config'
 interface Evento {
   hora: string
   titulo: string
+  titulo_en: string
   descripcion: string
+  descripcion_en: string
   imagen: string
 }
 
@@ -15,20 +17,28 @@ const guardando = ref(false)
 const guardado = ref(false)
 
 const SUGERIDO: Evento[] = [
-  { hora: '5:00 PM', titulo: 'Ceremonia', descripcion: 'Recepción de invitados', imagen: '' },
-  { hora: '6:30 PM', titulo: 'Cóctel', descripcion: 'Bebidas y bocadillos', imagen: '' },
-  { hora: '8:00 PM', titulo: 'Cena', descripcion: 'Banquete', imagen: '' },
-  { hora: '10:00 PM', titulo: 'Fiesta', descripcion: '¡A bailar!', imagen: '' },
+  { hora: '5:00 PM', titulo: 'Ceremonia', titulo_en: 'Ceremony', descripcion: 'Recepción de invitados', descripcion_en: 'Guest reception', imagen: '' },
+  { hora: '6:30 PM', titulo: 'Cóctel', titulo_en: 'Cocktail', descripcion: 'Bebidas y bocadillos', descripcion_en: 'Drinks and appetizers', imagen: '' },
+  { hora: '8:00 PM', titulo: 'Cena', titulo_en: 'Dinner', descripcion: 'Banquete', descripcion_en: 'Banquet', imagen: '' },
+  { hora: '10:00 PM', titulo: 'Fiesta', titulo_en: 'Party', descripcion: '¡A bailar!', descripcion_en: 'Let’s dance!', imagen: '' },
 ]
 
 async function cargar() {
   const c = await getConfig('itinerario')
-  eventos.value = c.eventos?.length ? c.eventos : []
+  // Rellena campos nuevos por si el itinerario se guardó antes de tener inglés
+  eventos.value = (c.eventos ?? []).map((e: any) => ({
+    hora: e.hora ?? '',
+    titulo: e.titulo ?? '',
+    titulo_en: e.titulo_en ?? '',
+    descripcion: e.descripcion ?? '',
+    descripcion_en: e.descripcion_en ?? '',
+    imagen: e.imagen ?? '',
+  }))
   cargando.value = false
 }
 
 function agregar() {
-  eventos.value.push({ hora: '', titulo: '', descripcion: '', imagen: '' })
+  eventos.value.push({ hora: '', titulo: '', titulo_en: '', descripcion: '', descripcion_en: '', imagen: '' })
 }
 
 async function subirImagen(e: Event, ev: Evento) {
@@ -84,8 +94,10 @@ onMounted(cargar)
       </div>
       <input v-model="ev.hora" class="inp inp--hora" placeholder="5:00 PM" />
       <div class="campos">
-        <input v-model="ev.titulo" class="inp" placeholder="Título (ej. Ceremonia)" />
-        <input v-model="ev.descripcion" class="inp" placeholder="Descripción (opcional)" />
+        <input v-model="ev.titulo" class="inp" placeholder="Título en español (ej. Ceremonia)" />
+        <input v-model="ev.titulo_en" class="inp inp--en" placeholder="🇬🇧 Título en inglés (Ceremony)" />
+        <input v-model="ev.descripcion" class="inp" placeholder="Descripción en español (opcional)" />
+        <input v-model="ev.descripcion_en" class="inp inp--en" placeholder="🇬🇧 Descripción en inglés (optional)" />
       </div>
       <label class="foto" :title="ev.imagen ? 'Cambiar foto' : 'Subir foto (opcional)'">
         <img v-if="ev.imagen" :src="ev.imagen" alt="" />

@@ -4,23 +4,47 @@ import { ref, computed } from 'vue'
 interface Evento {
   hora: string
   titulo: string
+  titulo_en?: string
   descripcion?: string
+  descripcion_en?: string
   imagen?: string
 }
 
-const props = withDefaults(defineProps<{ eventos?: Evento[] }>(), {
-  eventos: () => [],
-})
+const props = withDefaults(
+  defineProps<{ eventos?: Evento[]; lang?: string }>(),
+  { eventos: () => [], lang: 'es' }
+)
 
-const DEFAULT: Evento[] = [
+const pick = (es?: string, en?: string) =>
+  (props.lang === 'en' ? en || es : es || en) || ''
+
+const DEFAULT_ES: Evento[] = [
   { hora: '5:00 PM', titulo: 'Ceremonia', descripcion: 'Recepción de invitados' },
   { hora: '6:30 PM', titulo: 'Cóctel', descripcion: 'Bebidas y bocadillos' },
   { hora: '8:00 PM', titulo: 'Cena', descripcion: 'Banquete' },
   { hora: '9:30 PM', titulo: 'Brindis', descripcion: 'Por los novios' },
   { hora: '10:00 PM', titulo: 'Fiesta', descripcion: '¡A bailar!' },
 ]
+const DEFAULT_EN: Evento[] = [
+  { hora: '5:00 PM', titulo: 'Ceremony', descripcion: 'Guest reception' },
+  { hora: '6:30 PM', titulo: 'Cocktail', descripcion: 'Drinks and appetizers' },
+  { hora: '8:00 PM', titulo: 'Dinner', descripcion: 'Banquet' },
+  { hora: '9:30 PM', titulo: 'Toast', descripcion: 'To the newlyweds' },
+  { hora: '10:00 PM', titulo: 'Party', descripcion: 'Let’s dance!' },
+]
 
-const lista = computed(() => (props.eventos.length ? props.eventos : DEFAULT))
+const lista = computed(() => {
+  const base = props.eventos.length
+    ? props.eventos
+    : props.lang === 'en'
+      ? DEFAULT_EN
+      : DEFAULT_ES
+  return base.map((ev) => ({
+    ...ev,
+    titulo: pick(ev.titulo, ev.titulo_en) || ev.titulo,
+    descripcion: pick(ev.descripcion, ev.descripcion_en),
+  }))
+})
 const activo = ref(0)
 const actual = computed(() => lista.value[activo.value])
 </script>

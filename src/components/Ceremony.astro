@@ -3,7 +3,9 @@ interface Evento {
   titulo: string
   hora: string
   lugar: string
+  lugar_en?: string
   direccion: string
+  direccion_en?: string
   mapa?: string
   imagen?: string
 }
@@ -12,9 +14,13 @@ interface Props {
   ceremonia?: Evento
   recepcion?: Evento
   t?: Record<string, string>
+  lang?: string
 }
 
-const { ceremonia, recepcion, t = {} } = Astro.props
+const { ceremonia, recepcion, t = {}, lang = 'es' } = Astro.props
+
+const pick = (es?: string, en?: string) =>
+  (lang === 'en' ? en || es : es || en) || ''
 
 const FALLBACK_CEREMONIA: Evento = {
   titulo: t.ceremonia || 'Ceremonia',
@@ -41,11 +47,15 @@ function soloLlenos(obj: Partial<Evento> = {}): Partial<Evento> {
   )
 }
 
-// Mezcla fallback + solo los campos que el admin sí llenó
+// Mezcla fallback + solo los campos que el admin sí llenó, y elige idioma
 const eventos = [
   { ...FALLBACK_CEREMONIA, ...soloLlenos(ceremonia) },
   { ...FALLBACK_RECEPCION, ...soloLlenos(recepcion) },
-]
+].map((ev) => ({
+  ...ev,
+  lugar: pick(ev.lugar, ev.lugar_en) || ev.lugar,
+  direccion: pick(ev.direccion, ev.direccion_en) || ev.direccion,
+}))
 ---
 
 <section id="detalles" class="detalles">

@@ -1,23 +1,33 @@
 ---
 interface Vestimenta {
   etiqueta?: string
+  etiqueta_en?: string
   descripcion?: string
+  descripcion_en?: string
   nota?: string
+  nota_en?: string
   fotos?: string[]
 }
 
 interface Props {
   data?: Vestimenta
   t?: Record<string, string>
+  lang?: string
 }
 
-const { data = {}, t = {} } = Astro.props
+const { data = {}, t = {}, lang = 'es' } = Astro.props
 
-const etiqueta = data.etiqueta || 'Formal'
+// Elige el idioma correcto (con respaldo al otro si está vacío)
+const pick = (es?: string, en?: string) =>
+  (lang === 'en' ? en || es : es || en) || ''
+
+const etiqueta = pick(data.etiqueta, data.etiqueta_en) || 'Formal'
 const descripcion =
-  data.descripcion ||
-  'Te pedimos vestir formal para acompañarnos en este día tan especial.'
-const nota = data.nota || ''
+  pick(data.descripcion, data.descripcion_en) ||
+  (lang === 'en'
+    ? 'We kindly ask you to dress formally to join us on this special day.'
+    : 'Te pedimos vestir formal para acompañarnos en este día tan especial.')
+const nota = pick(data.nota, data.nota_en)
 const fotos = data.fotos || []
 ---
 
