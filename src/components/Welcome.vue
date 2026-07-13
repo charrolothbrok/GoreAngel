@@ -25,16 +25,12 @@ onMounted(() => {
   <Transition name="welcome">
     <div v-if="!abierto" class="welcome" role="dialog" aria-label="Bienvenida">
       <div class="welcome__inner">
-        <p class="eyebrow">Nos casamos</p>
-
-        <div class="welcome__monogram">
-          <span>{{ novio.charAt(0) }}</span>
-          <span class="welcome__amp">&amp;</span>
-          <span>{{ novia.charAt(0) }}</span>
-        </div>
-
-        <h1 class="welcome__names">{{ novio }} &amp; {{ novia }}</h1>
-        <p class="welcome__fecha">{{ fecha }}</p>
+        <img
+          src="/monograma.png"
+          :alt="`${novio} & ${novia} · ${fecha}`"
+          class="welcome__logo"
+          fetchpriority="high"
+        />
 
         <button class="welcome__btn" @click="abrir">
           <span class="welcome__btn-ico" aria-hidden="true">✉</span>
@@ -70,41 +66,14 @@ onMounted(() => {
   animation: subir 1s var(--ease-elegant) both;
 }
 
-.welcome__monogram {
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-  font-family: var(--font-display);
-  font-size: clamp(2.4rem, 9vw, 4rem);
-  color: var(--color-sage-dark);
-  border: 1px solid var(--color-gold);
-  border-radius: 999px;
-  width: clamp(5.5rem, 22vw, 8rem);
-  height: clamp(5.5rem, 22vw, 8rem);
-  justify-content: center;
-  margin-block: 0.5rem;
-}
-.welcome__amp {
-  font-style: italic;
-  font-size: 0.6em;
-  color: var(--color-sand);
-}
-
-.welcome__names {
-  font-family: var(--font-display);
-  font-size: clamp(2rem, 8vw, 3.4rem);
-  line-height: 1.05;
-}
-
-.welcome__fecha {
-  font-family: var(--font-display);
-  font-style: italic;
-  font-size: clamp(1rem, 3.5vw, 1.4rem);
-  color: var(--color-ink-soft);
+.welcome__logo {
+  width: clamp(260px, 80vw, 460px);
+  height: auto;
+  filter: drop-shadow(0 24px 45px rgba(43, 39, 36, 0.14));
 }
 
 .welcome__btn {
-  margin-top: 1rem;
+  margin-top: 0.5rem;
   display: inline-flex;
   align-items: center;
   gap: 0.6rem;
