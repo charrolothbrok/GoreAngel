@@ -157,10 +157,13 @@ const fotosMujeres = data.fotos_mujeres || []
   }
 
   .dress__desc {
+    /* Misma letra elegante que 'mesa de regalos' y la portada */
+    font-family: var(--font-display);
+    font-style: italic;
     color: var(--color-ink-soft);
-    font-size: 1.05rem;
-    line-height: 1.7;
-    max-width: 30rem;
+    font-size: clamp(1.2rem, 3vw, 1.6rem);
+    line-height: 1.6;
+    max-width: 32rem;
     /* Respeta los saltos de línea (enter) que se escriben en el admin */
     white-space: pre-line;
   }
