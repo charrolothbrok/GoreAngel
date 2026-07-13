@@ -49,9 +49,7 @@ const vestimenta = leerConfig('vestimenta')
 // Portada editable (lugar + texto de intro)
 const portada = leerConfig('portada')
 const lugar = portada.lugar || 'Zacatecas, México'
-const introTexto =
-  portada.intro_texto ||
-  'Después de un camino juntos, hemos decidido unir nuestras vidas. Nos encantaría que seas parte de este día.'
+const introTexto = portada.intro_texto || t.intro_texto_default
 ---
 
 <Layout lang={lang}>

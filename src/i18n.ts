@@ -13,6 +13,8 @@ export const translations: Record<Lang, Dict> = {
     hero_eyebrow: 'Nuestra boda',
 
     intro_eyebrow: 'Comienza la cuenta',
+    intro_texto_default:
+      'Después de un camino juntos, hemos decidido unir nuestras vidas. Nos encantaría que seas parte de este día.',
 
     cd_dias: 'Días',
     cd_horas: 'Horas',
@@ -96,6 +98,8 @@ export const translations: Record<Lang, Dict> = {
     hero_eyebrow: 'Our wedding',
 
     intro_eyebrow: 'The countdown begins',
+    intro_texto_default:
+      'After a journey together, we have decided to unite our lives. We would love for you to be part of this day.',
 
     cd_dias: 'Days',
     cd_horas: 'Hours',
