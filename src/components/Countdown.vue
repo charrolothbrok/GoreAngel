@@ -3,7 +3,7 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 
 const props = withDefaults(
   defineProps<{ target?: string; t?: Record<string, string> }>(),
-  { target: '2026-08-22T17:00:00', t: () => ({}) }
+  { target: '2026-08-22T14:00:00', t: () => ({}) }
 )
 
 const now = ref(Date.now())
