@@ -7,6 +7,8 @@ interface Vestimenta {
   nota?: string
   nota_en?: string
   fotos?: string[]
+  fotos_hombres?: string[]
+  fotos_mujeres?: string[]
 }
 
 interface Props {
@@ -28,7 +30,9 @@ const descripcion =
     ? 'We kindly ask you to dress formally to join us on this special day.'
     : 'Te pedimos vestir formal para acompañarnos en este día tan especial.')
 const nota = pick(data.nota, data.nota_en)
-const fotos = data.fotos || []
+// Compatibilidad: fotos antiguas (sin dividir) van al grupo de hombres
+const fotosHombres = data.fotos_hombres || data.fotos || []
+const fotosMujeres = data.fotos_mujeres || []
 ---
 
 <section id="vestimenta" class="dress">
@@ -58,13 +62,31 @@ const fotos = data.fotos || []
     }
 
     {
-      fotos.length > 0 && (
-        <div class="dress__fotos">
-          {fotos.map((url) => (
-            <figure class="dress__foto">
-              <img src={url} alt="Ejemplo de vestimenta" loading="lazy" />
-            </figure>
-          ))}
+      fotosHombres.length > 0 && (
+        <div class="dress__grupo">
+          <p class="dress__grupo-title">{t.dress_hombres || 'Caballeros'}</p>
+          <div class="dress__fotos">
+            {fotosHombres.map((url) => (
+              <figure class="dress__foto">
+                <img src={url} alt="Ejemplo de vestimenta" loading="lazy" />
+              </figure>
+            ))}
+          </div>
+        </div>
+      )
+    }
+
+    {
+      fotosMujeres.length > 0 && (
+        <div class="dress__grupo">
+          <p class="dress__grupo-title">{t.dress_mujeres || 'Damas'}</p>
+          <div class="dress__fotos">
+            {fotosMujeres.map((url) => (
+              <figure class="dress__foto">
+                <img src={url} alt="Ejemplo de vestimenta" loading="lazy" />
+              </figure>
+            ))}
+          </div>
         </div>
       )
     }
@@ -133,12 +155,23 @@ const fotos = data.fotos || []
     font-style: normal;
   }
 
+  .dress__grupo {
+    margin-top: 2.5rem;
+    width: 100%;
+  }
+  .dress__grupo-title {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 1.4rem;
+    color: var(--color-sage-dark);
+    margin-bottom: 1rem;
+  }
+
   .dress__fotos {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     gap: 0.8rem;
-    margin-top: 2rem;
   }
   .dress__foto {
     width: clamp(120px, 30vw, 180px);

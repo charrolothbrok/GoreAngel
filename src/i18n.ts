@@ -38,6 +38,8 @@ export const translations: Record<Lang, Dict> = {
     itin_title: 'Itinerario del día',
 
     dress_eyebrow: 'Código de vestimenta',
+    dress_hombres: 'Caballeros',
+    dress_mujeres: 'Damas',
 
     gifts_eyebrow: 'Con cariño',
     gifts_title: 'Mesa de regalos',
@@ -128,6 +130,8 @@ export const translations: Record<Lang, Dict> = {
     itin_title: 'Itinerary of the day',
 
     dress_eyebrow: 'Dress code',
+    dress_hombres: 'Gentlemen',
+    dress_mujeres: 'Ladies',
 
     gifts_eyebrow: 'With love',
     gifts_title: 'Gift registry',

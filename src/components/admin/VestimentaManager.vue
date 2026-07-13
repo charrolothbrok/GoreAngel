@@ -8,11 +8,12 @@ const descripcion = ref('')
 const descripcionEn = ref('')
 const nota = ref('')
 const notaEn = ref('')
-const fotos = ref<string[]>([])
+const fotosHombres = ref<string[]>([])
+const fotosMujeres = ref<string[]>([])
 const cargando = ref(true)
 const guardando = ref(false)
 const guardado = ref(false)
-const subiendo = ref(false)
+const subiendo = ref('')
 
 async function cargar() {
   const c = await getConfig('vestimenta')
@@ -22,26 +23,29 @@ async function cargar() {
   descripcionEn.value = c.descripcion_en ?? ''
   nota.value = c.nota ?? ''
   notaEn.value = c.nota_en ?? ''
-  fotos.value = c.fotos ?? []
+  // Compatibilidad: si había fotos antiguas (sin dividir), van a Hombres
+  fotosHombres.value = c.fotos_hombres ?? c.fotos ?? []
+  fotosMujeres.value = c.fotos_mujeres ?? []
   cargando.value = false
 }
 
-async function subirFotos(e: Event) {
+async function subirFotos(e: Event, grupo: 'hombres' | 'mujeres') {
   const input = e.target as HTMLInputElement
   const files = Array.from(input.files ?? [])
   if (!files.length) return
-  subiendo.value = true
+  subiendo.value = grupo
+  const destino = grupo === 'hombres' ? fotosHombres : fotosMujeres
   for (const file of files) {
     const url = await uploadImagen(file, 'vestimenta')
-    fotos.value.push(url)
+    destino.value.push(url)
   }
-  subiendo.value = false
+  subiendo.value = ''
   input.value = ''
   await guardar()
 }
 
-function quitarFoto(i: number) {
-  fotos.value.splice(i, 1)
+function quitarFoto(grupo: 'hombres' | 'mujeres', i: number) {
+  ;(grupo === 'hombres' ? fotosHombres : fotosMujeres).value.splice(i, 1)
 }
 
 async function guardar() {
@@ -54,7 +58,8 @@ async function guardar() {
     descripcion_en: descripcionEn.value,
     nota: nota.value,
     nota_en: notaEn.value,
-    fotos: fotos.value,
+    fotos_hombres: fotosHombres.value,
+    fotos_mujeres: fotosMujeres.value,
   })
   guardando.value = false
   guardado.value = true
@@ -110,17 +115,32 @@ onMounted(cargar)
       />
     </label>
 
-    <!-- Fotos de ejemplo de vestimenta -->
+    <!-- Fotos de ejemplo: HOMBRES -->
     <div class="f">
-      <span class="lbl">Fotos de ejemplo (opcional)</span>
+      <span class="lbl">👔 Fotos de ejemplo — Hombres (opcional)</span>
       <div class="fotos">
-        <figure v-for="(url, i) in fotos" :key="url" class="foto">
+        <figure v-for="(url, i) in fotosHombres" :key="url" class="foto">
           <img :src="url" alt="" />
-          <button class="foto__del" @click="quitarFoto(i)" aria-label="Quitar">✕</button>
+          <button class="foto__del" @click="quitarFoto('hombres', i)" aria-label="Quitar">✕</button>
         </figure>
         <label class="foto foto--add">
-          <input type="file" accept="image/*" multiple hidden @change="subirFotos" :disabled="subiendo" />
-          <span>{{ subiendo ? '…' : '+ Foto' }}</span>
+          <input type="file" accept="image/*" multiple hidden @change="(e) => subirFotos(e, 'hombres')" :disabled="subiendo === 'hombres'" />
+          <span>{{ subiendo === 'hombres' ? '…' : '+ Foto' }}</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Fotos de ejemplo: MUJERES -->
+    <div class="f">
+      <span class="lbl">👗 Fotos de ejemplo — Mujeres (opcional)</span>
+      <div class="fotos">
+        <figure v-for="(url, i) in fotosMujeres" :key="url" class="foto">
+          <img :src="url" alt="" />
+          <button class="foto__del" @click="quitarFoto('mujeres', i)" aria-label="Quitar">✕</button>
+        </figure>
+        <label class="foto foto--add">
+          <input type="file" accept="image/*" multiple hidden @change="(e) => subirFotos(e, 'mujeres')" :disabled="subiendo === 'mujeres'" />
+          <span>{{ subiendo === 'mujeres' ? '…' : '+ Foto' }}</span>
         </label>
       </div>
     </div>
