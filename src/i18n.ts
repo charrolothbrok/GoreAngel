@@ -8,7 +8,7 @@ export const translations: Record<Lang, Dict> = {
   es: {
     welcome_open: 'Abrir invitación',
     welcome_hint: 'Toca para abrir',
-    fecha: '22 de Agosto, 2026',
+    fecha: '22 de agosto, 2026',
 
     hero_eyebrow: 'Nuestra boda',
 

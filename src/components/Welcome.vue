@@ -3,7 +3,7 @@ import { ref, onMounted } from 'vue'
 
 const props = withDefaults(
   defineProps<{ novio?: string; novia?: string; fecha?: string; t?: Record<string, string> }>(),
-  { novio: 'Ángel', novia: 'Goretti', fecha: '22 de Agosto, 2026', t: () => ({}) }
+  { novio: 'Ángel', novia: 'Goretti', fecha: '22 de agosto, 2026', t: () => ({}) }
 )
 
 const abierto = ref(false)
